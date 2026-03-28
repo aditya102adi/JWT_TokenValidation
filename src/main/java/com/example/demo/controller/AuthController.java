@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +34,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
+	public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
 		
 		System.out.println(loginDTO.getName());
 		System.out.println(loginDTO.getPassword());
@@ -46,7 +48,7 @@ public class AuthController {
 		
 		response.addCookie(cookie);
 		
-		return ResponseEntity.ok("Your Token is: " + token);
-		
+		//return ResponseEntity.ok("Your Token is: " + token);
+		return ResponseEntity.ok(Map.of("message", "Your Token is: " + token));
 	}
 }
