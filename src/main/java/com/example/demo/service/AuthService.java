@@ -3,6 +3,9 @@ package com.example.demo.service;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +15,6 @@ import com.example.demo.dto.SignUpDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
 import com.example.demo.exceptions.ResourceAlreadyExists;
-import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 
 @Service
@@ -24,19 +26,23 @@ public class AuthService {
 	
 	private final TokenService tokenService;
 	
+	private final AuthenticationManager authenticationManager;
+	
 	
 	public AuthService(
 			
 			UserRepository userRepository, 
 			ModelMapper modelMapper,
 			PasswordEncoder passwordEncoder,
-			TokenService tokenService) {
+			TokenService tokenService,
+			AuthenticationManager authenticationManager) {
 		
 		
 		this.userRepository = userRepository;
 		this.modelMapper = modelMapper;
 		this.passwordEncoder = passwordEncoder;
 		this.tokenService = tokenService;
+		this.authenticationManager = authenticationManager;
 	}
 	
 	
@@ -58,7 +64,7 @@ public class AuthService {
 	}
 
 
-	public String login(LoginDTO loginDTO) {
+	/*public String login(LoginDTO loginDTO) {
 		
 		User user = userRepository.findByName(loginDTO.getName())
 			.orElseThrow(() -> new ResourceNotFoundException("Name is Invalid"));
@@ -71,6 +77,16 @@ public class AuthService {
 		
 		return tokenService.generateToken(user);
 		 
+	}*/
+	
+	public String login(LoginDTO loginDTO) {
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(loginDTO.getName(), loginDTO.getPassword())
+		);
+		
+		User user = (User) authentication.getPrincipal();
+		
+		return tokenService.generateToken(user);
 	}
 
 }

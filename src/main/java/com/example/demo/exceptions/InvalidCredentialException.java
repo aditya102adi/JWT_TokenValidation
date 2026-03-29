@@ -1,6 +1,6 @@
 package com.example.demo.exceptions;
 
-public class InvalidCredentialException extends Exception {
+public class InvalidCredentialException extends RuntimeException {
 	
 	public InvalidCredentialException(String msg) {
 		super(msg);

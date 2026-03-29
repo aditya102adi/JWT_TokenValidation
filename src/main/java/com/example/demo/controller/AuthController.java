@@ -1,17 +1,22 @@
 package com.example.demo.controller;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.advices.ApiResponse;
 import com.example.demo.dto.LoginDTO;
 import com.example.demo.dto.SignUpDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.service.AuthService;
+import com.example.demo.service.UserImpleService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,9 +26,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthController {
 	
 	private final AuthService authService;
+	private final UserImpleService userImpleService;
 	
-	public AuthController(AuthService authService) {
+	
+	public AuthController(AuthService authService, UserImpleService userImpleService) {
 		this.authService = authService;
+		this.userImpleService = userImpleService;
 	}
 	
 	@PostMapping("/signUp")
@@ -50,5 +58,12 @@ public class AuthController {
 		
 		//return ResponseEntity.ok("Your Token is: " + token);
 		return ResponseEntity.ok(Map.of("message", "Your Token is: " + token));
+	}
+	
+	
+	@GetMapping("/getAll")
+	public ResponseEntity<?> getAllRecords() {
+		List<UserDTO> response = userImpleService.findAllTheRecord();
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

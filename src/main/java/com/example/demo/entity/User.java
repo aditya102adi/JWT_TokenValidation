@@ -1,5 +1,13 @@
 package com.example.demo.entity;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.example.demo.entity.enums.Role;
 
 import jakarta.persistence.Column;
@@ -13,7 +21,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +36,21 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    
+    
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+    	Set<GrantedAuthority> authorities = new HashSet<>();
+        
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+
+        return authorities;
+    }
+    
+    @Override
+    public String getUsername() {
+    	return this.name;
+    }
 
     public User() {
     }
